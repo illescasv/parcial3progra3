@@ -1,0 +1,73 @@
+﻿@page "/Edicion/{titulo}"
+@inject HttpClient http
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<h3>Edicion</h3>
+
+<EditForm Model="@revista" OnValidSubmit="@Guardar">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    @* agregar informacion de la clase Libros*@
+
+    <div class="form-group">
+        <label for="Titulo">Titulo</label>
+        <InputText id="Titulo" @bind-Value="revista.Titulo" class="form-control" />
+        <ValidationMessage For="() => revista.Titulo" />
+    </div>
+    <div class="form-group">
+        <label for="Autor">Autor del libro</label>
+        <InputText id="Autor" @bind-Value="revista.Autor" class="form-control" />
+        <ValidationMessage For="() => revista.Autor" />
+    </div>
+    <div class="form-group">
+        <label for="Genero">Genero del libro</label>
+        <InputText id="Genero" @bind-Value="revista.Genero" class="form-control" />
+        <ValidationMessage For="() => revista.Genero" />
+    </div>
+    <div class="form-group">
+        <label for="Anio_publicacion">Ano publicacion</label>
+        <InputNumber id="Anio_publicacion" @bind-Value="revista.Anio_publicacion" class="form-control" />
+        <ValidationMessage For="() => revista.Anio_publicacion" />
+    </div>
+
+    @*agregar las caracteristicas de revista*@
+    <div class="form-group">
+        <label for="Volumen">Volumen de revista</label>
+        <InputText id="Volumen" @bind-Value="revista.Volumen" class="form-control" />
+        <ValidationMessage For="() => revista.Volumen" />
+    </div>
+    <div class="form-group">
+        <label for="No_ejemplar">Numero de ejemplar</label>
+        <InputNumber id="No_ejemplar" @bind-Value="revista.No_ejemplar" class="form-control" />
+
+    </div>
+
+    @*boton guardar*@
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+
+</EditForm>
+@code {
+
+	[Parameter]
+	public string titulo { get; set; }
+
+	private Revistas revista = new Revistas();
+	List<Revistas> revistas = new List<Revistas>();
+
+	protected async Task Guardar()
+	{
+		await localStorage.SetItemAsync("revistas", revistas);
+		NavigationManager.NavigateTo("/Registro");
+	}
+	protected override async Task OnInitializedAsync()
+	{
+		revistas = await localStorage.GetItemAsync<List<Revistas>>("revistas");
+		revista = revistas.Find(c => c.Titulo == titulo);
+
+	}
+}
